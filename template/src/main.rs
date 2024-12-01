@@ -7,7 +7,7 @@ fn main() {
     match load_file(std::env::args().nth(1)) {
         Ok((file_name, input)) => {
             println!("[Contents of file file: {file_name}]");
-            for line in input {
+            for line in &input {
                 println!("{line}")
             }
         }
@@ -15,6 +15,9 @@ fn main() {
             eprintln!("Error: {}", message);
         }
     }
+}
+
+fn part1_solution(input: Vec<String>) {
 }
 
 #[cfg(test)]
