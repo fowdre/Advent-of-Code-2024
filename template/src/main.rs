@@ -4,32 +4,33 @@ mod file_reading;
 use file_reading::load_file;
 
 fn main() {
-    match load_file(std::env::args().nth(1)) {
-        Ok((file_name, input)) => {
-            println!("[Contents of file file: {file_name}]");
-            for line in &input {
-                println!("{line}")
+    let args: Vec<String> = std::env::args().collect();
+    match load_file(&args) {
+        Ok(input) => {
+            if args[1] == "1" {
+                let part1_result = part1_solution(&input);
+
+                println!("Part 1 solution: {}", part1_result);
+            } else if args[1] == "2" {
+                let part2_result = part2_solution(&input);
+
+                println!("Part 2 solution: {}", part2_result);
+            } else {
+                eprintln!("Invalid argument. Please use 1 or 2.");
+                std::process::exit(1);
             }
         }
         Err(message) => {
             eprintln!("Error: {}", message);
+            std::process::exit(1);
         }
     }
 }
 
-fn part1_solution(input: Vec<String>) {
+fn part1_solution(input: &[String]) -> u128 {
+    todo!("Implement solution for part 1")
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    /// To check if modifications between different steps don't invalidate previous ones
-    fn breaking_changes_test() {
-        let input_path = "../inputs/day/small.txt";
-        let (_, input) = load_file(Some(input_path.to_string())).expect("Failed to load file");
-
-        assert_eq!(input, input);
-    }
+fn part2_solution(input: &[String]) -> u128 {
+    todo!("Implement solution for part 2")
 }

@@ -14,12 +14,13 @@ where
     Ok(io::BufReader::new(file).lines())
 }
 
-pub fn load_file(file_path: Option<String>) -> Result<(String, Vec<String>), String> {
-    match file_path {
-        Some(path) => match read_lines(&path) {
-            Ok(lines) => Ok((path, lines.map_while(Result::ok).collect())),
-            Err(err) => Err(err),
-        },
-        None => Err("Not enough arguments".to_string()),
+pub fn load_file(args: &[String]) -> Result<Vec<String>, String> {
+    if args.len() < 3 {
+        return Err("Not enough arguments".to_string());
+    }
+
+    match read_lines(&args[1]) {
+        Ok(lines) => Ok(lines.map_while(Result::ok).collect()),
+        Err(err) => Err(err),
     }
 }
