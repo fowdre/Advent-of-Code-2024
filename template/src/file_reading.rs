@@ -19,7 +19,7 @@ pub fn load_file(args: &[String]) -> Result<Vec<String>, String> {
         return Err("Not enough arguments".to_string());
     }
 
-    match read_lines(&args[1]) {
+    match read_lines(&args[2]) {
         Ok(lines) => Ok(lines.map_while(Result::ok).collect()),
         Err(err) => Err(err),
     }
