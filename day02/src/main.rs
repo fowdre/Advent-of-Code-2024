@@ -27,82 +27,108 @@ fn main() {
     }
 }
 
+fn are_all_nums_same_sign(nums: &[i128]) -> bool {
+    // let mut iter = nums.iter();
+
+    // iter.all(|num| num.is_positive()) || iter.all(|num| num.is_negative()) // don't work becausee 0 is positive & negative at the same time
+
+    let mut iter = nums.iter();
+    let sign = iter.find(|&&num| num != 0).unwrap_or(&1).signum();
+
+    iter.all(|num| num.signum() == sign)
+}
+
 fn part1_solution(input: &[String]) -> u128 {
-    let mut solution = 0;
+    let mut safe_reports_count = 0;
 
     for line in input {
         let parsed_line: Vec<_> = line
-            .split(" ")
-            .map(|nbr| nbr.parse::<i128>().unwrap())
+            .split_whitespace()
+            .map(|num| num.parse::<i128>().unwrap())
             .collect();
 
-        let mut ok = true;
-        let mut flag = parsed_line[0] <= parsed_line[1];
-        for i in 0..parsed_line.len() - 1 {
-            let new_flag = parsed_line[i] <= parsed_line[i + 1];
-            if flag != new_flag {
-                ok = false;
-                flag = new_flag;
-                break;
-            }
-            flag = new_flag;
-            let diff = parsed_line[i].abs_diff(parsed_line[i + 1]);
-            if !(diff == 1 || diff == 2 || diff == 3) {
-                ok = false;
-                break;
-            }
+        println!("\nline {line}");
+        let pairs: Vec<&[i128]> = parsed_line.windows(2).collect();
+        println!("pairs {pairs:?}");
+        let differences: Vec<i128> = pairs.iter().map(|pairs| pairs[1] - pairs[0]).collect();
+        if differences.iter().any(|&diff| diff == 0) {
+            continue;
         }
 
-        if ok {
-            solution += 1;
+        println!("diffs {differences:?}");
+        if !are_all_nums_same_sign(&differences) {
+            continue;
         }
+
+        let unsafe_reports: Vec<i128> = differences
+            .into_iter()
+            .filter(|diff| {
+                let abs = diff.abs();
+
+                abs != 1 && abs != 2 && abs != 3
+            })
+            .collect();
+
+        println!("unsafe {unsafe_reports:?}");
+
+        if !unsafe_reports.is_empty() {
+            continue;
+        }
+
+        safe_reports_count += 1;
     }
 
-    solution
+    safe_reports_count
 }
 
 fn part2_solution(input: &[String]) -> u128 {
-    let mut solution = 0;
+    let mut safe_reports_count = 0;
 
     for line in input {
         let parsed_line: Vec<_> = line
-            .split(" ")
-            .map(|nbr| nbr.parse::<i128>().unwrap())
+            .split_whitespace()
+            .map(|num| num.parse::<i128>().unwrap())
             .collect();
+        println!("\nline {line}");
 
-        let mut ok = true;
-        let mut flag = parsed_line[0] <= parsed_line[1];
-        let mut got_bad_level = false;
-        println!("line {:?}", parsed_line);
-        for i in 0..parsed_line.len() - 1 {
-            println!("{} {}", parsed_line[i], parsed_line[i + 1]);
-            let new_flag = parsed_line[i] <= parsed_line[i + 1];
-            if flag != new_flag {
-                if !got_bad_level {
-                    got_bad_level = true;
-                    flag = new_flag;
-                    continue;
-                }
-                ok = false;
-                flag = new_flag;
-                break;
+        for i in 0..parsed_line.len() + 1 {
+            // Test by removing one element at a time, starts with +1 to test the entire list (0 will mean check without removing an element)
+            let mut cloned_line = parsed_line.clone();
+            if i != 0 {
+                cloned_line.remove(i - 1);
             }
-            let diff = parsed_line[i].abs_diff(parsed_line[i + 1]);
-            if !(diff == 1 || diff == 2 || diff == 3) {
-                if !got_bad_level {
-                    got_bad_level = true;
-                    continue;
-                }
-                ok = false;
-                break;
-            }
-            flag = new_flag;
-        }
 
-        if ok {
-            solution += 1;
+            let pairs: Vec<&[i128]> = cloned_line.windows(2).collect();
+            println!("pairs {pairs:?}");
+            let differences: Vec<i128> = pairs.iter().map(|pairs| pairs[1] - pairs[0]).collect();
+            if differences.iter().any(|&diff| diff == 0) {
+                continue;
+            }
+
+            println!("diffs {differences:?}");
+            if !are_all_nums_same_sign(&differences) {
+                continue;
+            }
+
+            let unsafe_reports: Vec<i128> = differences
+                .into_iter()
+                .filter(|diff| {
+                    let abs = diff.abs();
+
+                    abs != 1 && abs != 2 && abs != 3
+                })
+                .collect();
+
+            println!("unsafe {unsafe_reports:?}");
+
+            if !unsafe_reports.is_empty() {
+                continue;
+            }
+
+            safe_reports_count += 1;
+            break;
         }
     }
 
-    solution
+    safe_reports_count
 }
